@@ -57,29 +57,30 @@ itemForm!: FormGroup;
 
   
 onRegister(): void {
-  console.log("Inside the Method");
-  if (this.itemForm.valid) {
-    console.log("Inside the Method conditions");
-    this.showError = false;
-    this.showMessage = false;
-    this.httpService.registerUser(this.itemForm.value).subscribe(
-      
-      () => {
-        console.log("Inside the Method conditions with subscription");
-        console.log("Subscribe working");
-        this.showMessage = true;
-        this.responseMessage = "You have successfully registered!";
-        this.itemForm.reset();
-      },
-      error => {
-        this.showError = true;
-        this.errorMessage = error.error;
-        console.error("Error during registration:", error); 
-      }
-    );
-  } else {
-    this.itemForm.markAllAsTouched();
+this.httpService.registerUser(this.itemForm.value).subscribe({
+  next: (data) => {
+    this.showMessage = true;
+    this.responseMessage = 'Welcome ' + data.name + " you are successfully registered";
+    this.itemForm.reset();
+    setTimeout(() => {
+      this.router.navigateByUrl('/login');
+    }, 2000);
+  },
+  error: (error) => {
+    this.errorMessage = true;
+
+    // Check if error has a message
+    if (error.error && error.error.message) {
+      this.responseMessage = error.error.message;
+    } else {
+      this.responseMessage = 'An unexpected error occurred: ' + JSON.stringify(error);
+    }
+
+    console.error('Registration error:', error);
   }
+});
+  
+  
 }
 }
 
